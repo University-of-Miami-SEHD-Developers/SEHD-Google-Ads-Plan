@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Budget Planner for SEHD</title>
+    <title>Dynamic Google Ads Campaign Budget Planner</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -39,7 +39,7 @@
 
     <div class="container mx-auto p-4 md:p-8">
         <header class="text-center mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Dynamic Budget Planner for SEHD</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">Dynamic Google Ads Budget Planner</h1>
             <p class="text-lg text-gray-600 mt-2">Adjust your campaign variables below to see the budget update in real-time.</p>
         </header>
 
@@ -66,7 +66,7 @@
 
             <!-- Campaign Specific Settings -->
             <h3 class="text-xl font-semibold mb-4 mt-6 border-b pb-2">Campaign Allocation</h3>
-            <div id="campaign-settings" class="grid grid-cols-1 gap-6">
+            <div id="campaign-settings" class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-4">
                  <!-- Campaign inputs will be generated here -->
             </div>
             <div class="text-right mt-4 font-bold text-lg">
@@ -92,34 +92,29 @@
         document.addEventListener('DOMContentLoaded', function () {
             
             const initialCampaigns = [
-                { name: "Athletic Training", percentage: 60, searchStartDate: "2025-09-26", searchEndDate: "2025-10-31", displayStartDate: "2025-09-26", displayEndDate: "2025-10-31" },
-                { name: "Counseling", percentage: 20, searchStartDate: "2025-09-29", searchEndDate: "2025-12-31", displayStartDate: "2025-09-29", displayEndDate: "2025-12-31" },
-                { name: "Applied Physiology", percentage: 10, searchStartDate: "2025-09-29", searchEndDate: "2025-12-31", displayStartDate: "2025-09-29", displayEndDate: "2025-12-31" },
-                { name: "EdD in Higher Education", percentage: 10, searchStartDate: "2025-09-29", searchEndDate: "2025-12-31", displayStartDate: "2025-09-29", displayEndDate: "2025-12-31" },
+                { name: "Athletic Training", percentage: 60, startDate: "2025-09-29", endDate: "2025-10-31" },
+                { name: "Counseling", percentage: 20, startDate: "2025-09-29", endDate: "2025-12-31" },
+                { name: "Applied Physiology", percentage: 10, startDate: "2025-09-29", endDate: "2025-12-31" },
+                { name: "EdD in Higher Education", percentage: 10, startDate: "2025-09-29", endDate: "2025-12-31" },
             ];
 
             const campaignSettingsContainer = document.getElementById('campaign-settings');
             initialCampaigns.forEach(c => {
                 const div = document.createElement('div');
-                div.classList.add('p-4', 'bg-gray-50', 'rounded-lg', 'border');
+                div.classList.add('grid', 'grid-cols-1', 'sm:grid-cols-4', 'gap-4', 'p-3', 'bg-gray-50', 'rounded-md', 'items-center');
                 div.innerHTML = `
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-3">
-                        <input type="text" value="${c.name}" class="sm:col-span-1 rounded-md border-gray-300 shadow-sm sm:text-sm campaign-name" placeholder="Campaign Name">
-                        <div class="sm:col-span-1 flex items-center">
-                             <label class="mr-2 text-sm font-medium">Budget:</label>
+                    <input type="text" value="${c.name}" class="sm:col-span-1 rounded-md border-gray-300 shadow-sm sm:text-sm campaign-name" placeholder="Campaign Name">
+                    <div class="sm:col-span-1">
+                        <div class="flex items-center">
                             <input type="number" value="${c.percentage}" min="0" max="100" class="w-20 rounded-md border-gray-300 shadow-sm sm:text-sm campaign-percentage" placeholder="%">
-                            <span class="ml-1 text-sm">%</span>
+                            <span class="ml-1">%</span>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t pt-3">
-                        <div class="font-medium self-center">Search Dates</div>
-                        <input type="date" value="${c.searchStartDate}" class="w-full rounded-md border-gray-300 shadow-sm sm:text-sm campaign-search-startDate">
-                        <input type="date" value="${c.searchEndDate}" class="w-full rounded-md border-gray-300 shadow-sm sm:text-sm campaign-search-endDate">
+                    <div class="sm:col-span-1">
+                         <input type="date" value="${c.startDate}" class="w-full rounded-md border-gray-300 shadow-sm sm:text-sm campaign-startDate">
                     </div>
-                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
-                        <div class="font-medium self-center">Display Dates</div>
-                        <input type="date" value="${c.displayStartDate}" class="w-full rounded-md border-gray-300 shadow-sm sm:text-sm campaign-display-startDate">
-                        <input type="date" value="${c.displayEndDate}" class="w-full rounded-md border-gray-300 shadow-sm sm:text-sm campaign-display-endDate">
+                    <div class="sm:col-span-1">
+                         <input type="date" value="${c.endDate}" class="w-full rounded-md border-gray-300 shadow-sm sm:text-sm campaign-endDate">
                     </div>
                 `;
                 campaignSettingsContainer.appendChild(div);
@@ -161,36 +156,28 @@
                 let totalPercentage = 0;
                 const budgetPools = {};
                 const campaignDivs = document.querySelectorAll('#campaign-settings > div');
-                let overallStartDate = new Date('2999-12-31');
-                let overallEndDate = new Date('1970-01-01');
+                let overallStartDate = new Date('2999-12-31'); // Start with a future date
+                let overallEndDate = new Date('1970-01-01'); // Start with a past date
 
                 campaignDivs.forEach(div => {
                     const name = div.querySelector('.campaign-name').value;
                     const percentage = parseFloat(div.querySelector('.campaign-percentage').value) || 0;
-                    const searchStartDateStr = div.querySelector('.campaign-search-startDate').value;
-                    const searchEndDateStr = div.querySelector('.campaign-search-endDate').value;
-                    const displayStartDateStr = div.querySelector('.campaign-display-startDate').value;
-                    const displayEndDateStr = div.querySelector('.campaign-display-endDate').value;
+                    const startDateStr = div.querySelector('.campaign-startDate').value;
+                    const endDateStr = div.querySelector('.campaign-endDate').value;
+                    if (!name || !startDateStr || !endDateStr) return;
 
-                    if (!name || !searchStartDateStr || !searchEndDateStr || !displayStartDateStr || !displayEndDateStr) return;
-
-                    const sSD = new Date(searchStartDateStr + 'T12:00:00Z');
-                    const sED = new Date(searchEndDateStr + 'T23:59:59Z');
-                    const dSD = new Date(displayStartDateStr + 'T12:00:00Z');
-                    const dED = new Date(displayEndDateStr + 'T23:59:59Z');
-                    
+                    const startDate = new Date(startDateStr + 'T12:00:00Z');
+                    const endDate = new Date(endDateStr + 'T23:59:59Z');
                     totalPercentage += percentage;
                     
                     budgetPools[name] = {
                         budget: totalBudget * (percentage / 100),
-                        searchStartDate: sSD, searchEndDate: sED,
-                        displayStartDate: dSD, displayEndDate: dED,
+                        startDate: startDate,
+                        endDate: endDate
                     };
                     
-                    if (sSD < overallStartDate) overallStartDate = sSD;
-                    if (dSD < overallStartDate) overallStartDate = dSD;
-                    if (sED > overallEndDate) overallEndDate = sED;
-                    if (dED > overallEndDate) overallEndDate = dED;
+                    if (startDate < overallStartDate) overallStartDate = startDate;
+                    if (endDate > overallEndDate) overallEndDate = endDate;
                 });
                 
                 if (isNaN(overallStartDate.getTime()) || isNaN(overallEndDate.getTime())) return;
@@ -221,88 +208,84 @@
                         weeklyData[name].Display[week.key] = 0;
                     });
                 });
-                
-                // --- Loop through each campaign's budget pool ---
+
                 for (const poolName in budgetPools) {
                     const pool = budgetPools[poolName];
-                    const searchBudget = pool.budget * searchSplit;
-                    const displayBudget = pool.budget * displaySplit;
-
-                    // --- Handle special re-allocation for Athletic Training ---
+                    
                     if (poolName === "Athletic Training" && budgetPools["Counseling"]) {
-                        const at = pool;
-                        const coun = budgetPools["Counseling"];
+                        const atStartDate = pool.startDate;
+                        const atEndDate = pool.endDate;
+                        const counselingEndDate = budgetPools["Counseling"].endDate;
 
-                        const phase1SearchDays = daysBetween(at.searchStartDate, at.searchEndDate);
-                        const phase2SearchDays = daysBetween(new Date(at.searchEndDate.getTime() + 86400000), coun.searchEndDate);
-                        const totalSearchDaysForPool = phase1SearchDays + phase2SearchDays;
-                        const searchDailyRate = totalSearchDaysForPool > 0 ? searchBudget / totalSearchDaysForPool : 0;
-
-                        const phase1DisplayDays = daysBetween(at.displayStartDate, at.displayEndDate);
-                        const phase2DisplayDays = daysBetween(new Date(at.displayEndDate.getTime() + 86400000), coun.displayEndDate);
-                        const totalDisplayDaysForPool = phase1DisplayDays + phase2DisplayDays;
-                        const displayDailyRate = totalDisplayDaysForPool > 0 ? displayBudget / totalDisplayDaysForPool : 0;
+                        const phase2StartDate = new Date(atEndDate);
+                        phase2StartDate.setDate(phase2StartDate.getDate() + 1);
                         
-                        // Distribute the daily rates across the weeks
-                        weeklyHeaders.forEach(week => {
-                            for (let d = new Date(week.start); d <= week.end; d.setDate(d.getDate() + 1)) {
-                                // Search spend
-                                if (d >= at.searchStartDate && d <= at.searchEndDate) {
-                                    weeklyData["Athletic Training"].Search[week.key] += searchDailyRate;
-                                } else if (d > at.searchEndDate && d <= coun.searchEndDate) {
-                                    weeklyData["Counseling"].Search[week.key] += searchDailyRate;
-                                }
-                                // Display spend
-                                if (d >= at.displayStartDate && d <= at.displayEndDate) {
-                                    weeklyData["Athletic Training"].Display[week.key] += displayDailyRate;
-                                } else if (d > at.displayEndDate && d <= coun.displayEndDate) {
-                                     weeklyData["Counseling"].Display[week.key] += displayDailyRate;
-                                }
-                            }
-                        });
+                        const duration1 = daysBetween(atStartDate, atEndDate);
+                        const duration2 = daysBetween(phase2StartDate, counselingEndDate);
+                        const totalDurationForPool = duration1 + duration2;
                         
-                    } else if (poolName !== "Counseling") { // Handle all other non-counseling campaigns
-                         const searchDays = daysBetween(pool.searchStartDate, pool.searchEndDate);
-                         const searchDailyRate = searchDays > 0 ? searchBudget / searchDays : 0;
+                        if (totalDurationForPool > 0) {
+                             const dailySpendRate = pool.budget / totalDurationForPool;
 
-                         const displayDays = daysBetween(pool.displayStartDate, pool.displayEndDate);
-                         const displayDailyRate = displayDays > 0 ? displayBudget / displayDays : 0;
+                             weeklyHeaders.forEach(week => {
+                                let activeDaysP1 = 0;
+                                for (let d = new Date(week.start); d <= week.end; d.setDate(d.getDate() + 1)) {
+                                    if (d >= atStartDate && d <= atEndDate) activeDaysP1++;
+                                }
+                                if (activeDaysP1 > 0) {
+                                    const spend = dailySpendRate * activeDaysP1;
+                                    weeklyData["Athletic Training"].Search[week.key] += spend * searchSplit;
+                                    weeklyData["Athletic Training"].Display[week.key] += spend * displaySplit;
+                                }
 
-                         weeklyHeaders.forEach(week => {
-                            for (let d = new Date(week.start); d <= week.end; d.setDate(d.getDate() + 1)) {
-                                if (d >= pool.searchStartDate && d <= pool.searchEndDate) {
-                                    weeklyData[poolName].Search[week.key] += searchDailyRate;
+                                let activeDaysP2 = 0;
+                                for (let d = new Date(week.start); d <= week.end; d.setDate(d.getDate() + 1)) {
+                                     if (d >= phase2StartDate && d <= counselingEndDate) activeDaysP2++;
                                 }
-                                if (d >= pool.displayStartDate && d <= pool.displayEndDate) {
-                                    weeklyData[poolName].Display[week.key] += displayDailyRate;
+                                if (activeDaysP2 > 0) {
+                                    const spend = dailySpendRate * activeDaysP2;
+                                    weeklyData["Counseling"].Search[week.key] += spend * searchSplit;
+                                    weeklyData["Counseling"].Display[week.key] += spend * displaySplit;
                                 }
-                            }
-                        });
+                            });
+                        }
+                    } else if (poolName !== "Counseling") {
+                        const duration = daysBetween(pool.startDate, pool.endDate);
+                        if (duration > 0) {
+                            const dailySpendRate = pool.budget / duration;
+                            weeklyHeaders.forEach(week => {
+                                let activeDays = 0;
+                                for (let d = new Date(week.start); d <= week.end; d.setDate(d.getDate() + 1)) {
+                                    if (d >= pool.startDate && d <= pool.endDate) activeDays++;
+                                }
+                                if (activeDays > 0) {
+                                    const spend = dailySpendRate * activeDays;
+                                    weeklyData[poolName].Search[week.key] += spend * searchSplit;
+                                    weeklyData[poolName].Display[week.key] += spend * displaySplit;
+                                }
+                            });
+                        }
                     }
                 }
                 
-                // Handle Counseling's *own* dedicated budget (the 20%)
-                if (budgetPools["Counseling"]) {
-                    const pool = budgetPools["Counseling"];
-                    const searchBudget = pool.budget * searchSplit;
-                    const displayBudget = pool.budget * displaySplit;
-                    
-                    const searchDays = daysBetween(pool.searchStartDate, pool.searchEndDate);
-                    const searchDailyRate = searchDays > 0 ? searchBudget / searchDays : 0;
-
-                    const displayDays = daysBetween(pool.displayStartDate, pool.displayEndDate);
-                    const displayDailyRate = displayDays > 0 ? displayBudget / displayDays : 0;
-
-                    weeklyHeaders.forEach(week => {
-                        for (let d = new Date(week.start); d <= week.end; d.setDate(d.getDate() + 1)) {
-                            if (d >= pool.searchStartDate && d <= pool.searchEndDate) {
-                                weeklyData["Counseling"].Search[week.key] += searchDailyRate;
+                // Handle Counseling's own budget separately
+                if (budgetPools["Counseling"]){
+                    const counselingPool = budgetPools["Counseling"];
+                    const duration = daysBetween(counselingPool.startDate, counselingPool.endDate);
+                    if (duration > 0) {
+                        const dailySpendRate = counselingPool.budget / duration;
+                        weeklyHeaders.forEach(week => {
+                            let activeDays = 0;
+                            for (let d = new Date(week.start); d <= week.end; d.setDate(d.getDate() + 1)) {
+                                if (d >= counselingPool.startDate && d <= counselingPool.endDate) activeDays++;
                             }
-                             if (d >= pool.displayStartDate && d <= pool.displayEndDate) {
-                                weeklyData["Counseling"].Display[week.key] += displayDailyRate;
+                            if (activeDays > 0) {
+                                const spend = dailySpendRate * activeDays;
+                                weeklyData["Counseling"].Search[week.key] += spend * searchSplit;
+                                weeklyData["Counseling"].Display[week.key] += spend * displaySplit;
                             }
-                        }
-                    });
+                        });
+                    }
                 }
 
 
@@ -360,3 +343,4 @@
     </script>
 </body>
 </html>
+
