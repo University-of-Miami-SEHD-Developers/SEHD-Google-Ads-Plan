@@ -1,0 +1,203 @@
+<style>
+  .tab-bar { display: flex; gap: 8px; margin: 1rem 0 1.5rem; flex-wrap: wrap; }
+  .tab { padding: 6px 16px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); font-size: 13px; cursor: pointer; color: var(--color-text-secondary); transition: all 0.15s; }
+  .tab.active { background: #534AB7; color: #EEEDFE; border-color: #534AB7; font-weight: 500; }
+  .email-wrap { display: none; }
+  .email-wrap.visible { display: block; }
+  .email-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; max-width: 600px; margin: 0 auto; }
+  .email-body { padding: 2rem; }
+  .email-footer { background: #F1EFE8; padding: 1rem 2rem; text-align: center; font-size: 12px; color: var(--color-text-secondary); }
+  .sig-area { display: flex; align-items: center; gap: 14px; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 0.5px solid var(--color-border-tertiary); }
+  .sig-avatar { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 500; flex-shrink: 0; }
+  .body-p { font-size: 15px; color: var(--color-text-secondary); line-height: 1.8; margin: 0 0 1rem; }
+
+  /* Template 1 — Classic */
+  .hdr-gold { background: #26215C; padding: 2.5rem 2rem; text-align: center; }
+  .hdr-gold .year-badge { display: inline-block; border: 1px solid #FAC775; color: #FAC775; font-size: 11px; letter-spacing: 2px; padding: 4px 14px; border-radius: 20px; margin-bottom: 1rem; text-transform: uppercase; }
+  .hdr-gold h1 { color: #FAC775; font-size: 26px; font-weight: 500; margin: 0 0 0.4rem; font-family: var(--font-serif); }
+  .hdr-gold p { color: #AFA9EC; font-size: 13px; margin: 0; }
+  .divider-gold { height: 1px; border: none; background: linear-gradient(90deg, transparent, #FAC775, transparent); margin: 1.5rem 0; }
+  .quote-block { border-left: 3px solid #FAC775; padding: 0.75rem 1.25rem; background: #FAEEDA; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; margin: 1.5rem 0; }
+  .quote-block p { font-family: var(--font-serif); font-size: 15px; color: #633806; margin: 0; line-height: 1.7; }
+  .pillar-row { display: flex; gap: 12px; margin: 1.5rem 0; }
+  .pillar { flex: 1; text-align: center; padding: 1rem 0.5rem; background: #FAEEDA; border-radius: var(--border-radius-md); }
+  .pillar-icon { font-size: 20px; margin-bottom: 4px; }
+  .pillar-label { font-size: 11px; color: #633806; text-transform: uppercase; letter-spacing: 1px; font-weight: 500; }
+
+  /* Template 2 — Modern */
+  .hdr-modern { background: #185FA5; padding: 2.5rem 2rem; }
+  .hdr-modern h1 { color: #E6F1FB; font-size: 28px; font-weight: 500; margin: 0 0 0.4rem; }
+  .hdr-modern .sub { color: #B5D4F4; font-size: 14px; margin: 0; }
+  .conf-row { display: flex; gap: 5px; margin-bottom: 1rem; }
+  .conf-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 1.2rem 0; }
+  .badge { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+  .b-blue { background: #E6F1FB; color: #0C447C; }
+  .b-green { background: #EAF3DE; color: #27500A; }
+  .b-purple { background: #EEEDFE; color: #3C3489; }
+  .b-amber { background: #FAEEDA; color: #633806; }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .highlight-box { background: var(--color-background-secondary); border-left: 3px solid #185FA5; border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0; padding: 1rem 1.25rem; margin: 1.5rem 0; }
+  .highlight-box p { margin: 0; font-size: 14px; color: var(--color-text-primary); line-height: 1.7; font-weight: 500; }
+
+  /* Template 3 — Warm */
+  .hdr-warm { background: #E1F5EE; padding: 2.5rem 2rem; text-align: center; border-bottom: 0.5px solid #9FE1CB; }
+  .hdr-warm h1 { color: #085041; font-size: 24px; font-weight: 500; margin: 0.75rem 0 0.4rem; font-family: var(--font-serif); }
+  .hdr-warm .sub { color: #0F6E56; font-size: 13px; margin: 0; }
+  .cap-icon { font-size: 40px; line-height: 1; }
+  .tl-item { display: flex; gap: 14px; margin-bottom: 1rem; }
+  .tl-dot-col { display: flex; flex-direction: column; align-items: center; }
+  .tl-dot { width: 34px; height: 34px; border-radius: 50%; background: #E1F5EE; border: 2px solid #1D9E75; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+  .tl-line { width: 2px; flex: 1; background: #9FE1CB; margin-top: 4px; min-height: 16px; }
+  .tl-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 2px; }
+  .tl-desc { font-size: 13px; color: var(--color-text-secondary); margin: 0; line-height: 1.5; }
+  .social-bar { background: #1D9E75; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .social-dot { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #E1F5EE; font-weight: 500; }
+</style>
+
+<div class="tab-bar">
+  <button class="tab active" onclick="showTab(0)">Template 1 — Classic & Elegant</button>
+  <button class="tab" onclick="showTab(1)">Template 2 — Modern & Bold</button>
+  <button class="tab" onclick="showTab(2)">Template 3 — Warm & Personal</button>
+</div>
+
+<!-- TEMPLATE 1 -->
+<div class="email-wrap visible" id="t0">
+  <div class="email-card">
+    <div class="hdr-gold">
+      <div class="year-badge">Spring 2026 Graduation</div>
+      <h1>Congratulations, Class of 2026</h1>
+      <p>A message from the Dean · School of Education and Human Development</p>
+    </div>
+    <div class="email-body">
+      <p class="body-p">Dear Graduates,</p>
+      <p class="body-p">Today we celebrate an important milestone in your journey — one shaped by hard work, perseverance, and incredible growth. During your time here at the School of Education and Human Development, you faced challenges with resilience, embraced new opportunities, and grew both personally and professionally.</p>
+      <hr class="divider-gold">
+      <div class="pillar-row">
+        <div class="pillar"><div class="pillar-icon">💡</div><div class="pillar-label">Knowledge</div></div>
+        <div class="pillar"><div class="pillar-icon">🤝</div><div class="pillar-label">Commitment</div></div>
+        <div class="pillar"><div class="pillar-icon">❤️</div><div class="pillar-label">Compassion</div></div>
+        <div class="pillar"><div class="pillar-icon">🌍</div><div class="pillar-label">Impact</div></div>
+      </div>
+      <p class="body-p">Your achievements also reflect the support of your families, friends, and faculty who stood by you, encouraged you, and believed in your success. Today, you become part of our lifelong School of Education and Human Development community — a family that will always be here to support you, celebrate you, and welcome you back whenever you return.</p>
+      <div class="quote-block">
+        <p>"As you take your next steps, lead with commitment, knowledge, and compassion. The world needs your voice, your vision, and your dedication."</p>
+      </div>
+      <p class="body-p">Please stay connected with us. Share your successes and the many ways you continue to make a difference. Your journey of impact is just beginning — and we cannot wait to see all the ways you will change the world.</p>
+      <div class="sig-area">
+        <div class="sig-avatar" style="background:#26215C; color:#FAC775;">LK</div>
+        <div>
+          <p style="margin:0; font-weight:500; font-size:14px; color:var(--color-text-primary);">Laura Kohn-Wood</p>
+          <p style="margin:0; font-size:13px; color:var(--color-text-secondary);">Dean, School of Education and Human Development</p>
+          <p style="margin:0; font-size:12px; color:var(--color-text-secondary);">University of Miami · Spring 2026</p>
+        </div>
+      </div>
+    </div>
+    <div class="email-footer">School of Education and Human Development · University of Miami · <a href="#" style="color:var(--color-text-info);">Unsubscribe</a></div>
+  </div>
+</div>
+
+<!-- TEMPLATE 2 -->
+<div class="email-wrap" id="t1">
+  <div class="email-card">
+    <div class="hdr-modern">
+      <div class="conf-row">
+        <div class="conf-dot" style="background:#FAC775;"></div>
+        <div class="conf-dot" style="background:#5DCAA5;"></div>
+        <div class="conf-dot" style="background:#F09595;"></div>
+        <div class="conf-dot" style="background:#AFA9EC;"></div>
+        <div class="conf-dot" style="background:#FAC775;"></div>
+      </div>
+      <h1>You did it. 🎓</h1>
+      <p class="sub">Congratulations from Dean Laura Kohn-Wood · School of Education and Human Development</p>
+    </div>
+    <div class="email-body">
+      <p class="body-p">Dear Graduates,</p>
+      <p class="body-p">We are truly proud of the educated leaders and changemakers you have become. Today we celebrate not just a degree — but years of resilience, growth, and dedication to your fields and communities.</p>
+      <p style="font-size:13px; font-weight:500; color:var(--color-text-secondary); text-transform:uppercase; letter-spacing:0.5px; margin:1.5rem 0 0.5rem;">The Class of 2026 is defined by</p>
+      <div class="badge-row">
+        <span class="badge b-blue"><span class="badge-dot"></span>Resilience</span>
+        <span class="badge b-green"><span class="badge-dot"></span>Leadership</span>
+        <span class="badge b-purple"><span class="badge-dot"></span>Innovation</span>
+        <span class="badge b-amber"><span class="badge-dot"></span>Compassion</span>
+      </div>
+      <p class="body-p">Your achievements also reflect the support of your families, friends, and faculty who stood by you every step of the way. Today, you join a lifelong School of Education and Human Development community that will always celebrate and support you.</p>
+      <div class="highlight-box">
+        <p>Lead with commitment, knowledge, and compassion. The world needs your voice, your vision, and your dedication to improving the fields you have chosen.</p>
+      </div>
+      <p class="body-p">Please stay connected — share your successes and the ways you continue to make a difference. You will always have a home here. Congratulations, Class of 2026. We cannot wait to see all the ways you will change the world.</p>
+      <div class="sig-area">
+        <div class="sig-avatar" style="background:#185FA5; color:#E6F1FB;">LK</div>
+        <div>
+          <p style="margin:0; font-weight:500; font-size:14px; color:var(--color-text-primary);">Laura Kohn-Wood</p>
+          <p style="margin:0; font-size:13px; color:var(--color-text-secondary);">Dean, School of Education and Human Development</p>
+          <p style="margin:0; font-size:12px; color:var(--color-text-secondary);">University of Miami · Spring 2026</p>
+        </div>
+      </div>
+    </div>
+    <div class="email-footer">School of Education and Human Development · University of Miami · <a href="#" style="color:var(--color-text-info);">Unsubscribe</a></div>
+  </div>
+</div>
+
+<!-- TEMPLATE 3 -->
+<div class="email-wrap" id="t2">
+  <div class="email-card">
+    <div class="hdr-warm">
+      <div class="cap-icon">🎓</div>
+      <h1>From Dean Kohn-Wood, with pride</h1>
+      <p class="sub">A personal note to the Class of 2026 · School of Education and Human Development</p>
+    </div>
+    <div class="email-body">
+      <p class="body-p" style="font-family:var(--font-serif);">Dear Graduates,</p>
+      <p class="body-p">Congratulations, Class of 2026. Today we celebrate an important milestone in your journey — one shaped by hard work, perseverance, and incredible growth. We are truly proud of the educated leaders and changemakers you have become.</p>
+      <p style="font-size:13px; font-weight:500; color:var(--color-text-secondary); text-transform:uppercase; letter-spacing:0.5px; margin:1.5rem 0 1rem;">Your journey, in three chapters</p>
+      <div class="tl-item">
+        <div class="tl-dot-col"><div class="tl-dot">📖</div><div class="tl-line"></div></div>
+        <div style="flex:1; padding-bottom:0.5rem;">
+          <p class="tl-title">You arrived with curiosity</p>
+          <p class="tl-desc">You embraced new opportunities and brought your whole self to the School of Education and Human Development community.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot-col"><div class="tl-dot">💪</div><div class="tl-line"></div></div>
+        <div style="flex:1; padding-bottom:0.5rem;">
+          <p class="tl-title">You grew with resilience</p>
+          <p class="tl-desc">You faced challenges head-on, supported by families, friends, and faculty who believed in your success every step of the way.</p>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot-col"><div class="tl-dot">🌟</div></div>
+        <div style="flex:1;">
+          <p class="tl-title">You leave ready to lead</p>
+          <p class="tl-desc">Armed with commitment, knowledge, and compassion — your journey of impact is just beginning.</p>
+        </div>
+      </div>
+      <p class="body-p" style="margin-top:1rem;">Today, you become part of our lifelong SEHD community — a family that will always be here to support you, celebrate you, and welcome you back. Please stay connected and share your successes. You will always have a home here.</p>
+      <p class="body-p">Congratulations again, Class of 2026. We cannot wait to see all the ways you will change the world.</p>
+      <div class="sig-area">
+        <div class="sig-avatar" style="background:#085041; color:#9FE1CB;">LK</div>
+        <div>
+          <p style="margin:0; font-weight:500; font-size:14px; color:var(--color-text-primary);">Laura Kohn-Wood</p>
+          <p style="margin:0; font-size:13px; color:var(--color-text-secondary);">Dean, School of Education and Human Development</p>
+          <p style="margin:0; font-size:12px; color:var(--color-text-secondary);">University of Miami · Spring 2026</p>
+        </div>
+      </div>
+    </div>
+    <div class="social-bar">
+      <span style="color:#E1F5EE; font-size:13px;">Stay connected with SEHD</span>
+      <div style="display:flex; gap:8px;">
+        <div class="social-dot">in</div>
+        <div class="social-dot" style="font-size:11px;">𝕏</div>
+        <div class="social-dot">ig</div>
+      </div>
+    </div>
+    <div class="email-footer">School of Education and Human Development · University of Miami · <a href="#" style="color:var(--color-text-info);">Unsubscribe</a></div>
+  </div>
+</div>
+
+<script>
+  function showTab(i) {
+    document.querySelectorAll('.email-wrap').forEach((el, idx) => el.classList.toggle('visible', idx === i));
+    document.querySelectorAll('.tab').forEach((el, idx) => el.classList.toggle('active', idx === i));
+  }
+</script>
